@@ -3,22 +3,13 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"name": "Python 调试程序: 当前文件",
-			"type": "debugpy",
-			"request": "launch",
-			"program": "${file}",
-			"console": "integratedTerminal"
-		},
-		{
 			"name": "Indexer",
 			"type": "debugpy",
 			"request": "launch",
 			"module": "poetry",
 			"args": [
-				"poe",
-				"index",
-				"--root",
-				"D:\\pyprojects\\graphrag_project_test"
+				"poe", "index",
+				"--root", "<path_to_ragtest_root_demo>"
 			],
 		},
 		{
@@ -27,14 +18,10 @@
 			"request": "launch",
 			"module": "poetry",
 			"args": [
-				"poe",
-				"query",
-				"--root",
-				"D:\\pyprojects\\graphrag_project_test",
-				"--method",
-				"global",
-				"--query",
-				"What are the top themes in this story",
+				"poe", "query",
+				"--root", "<path_to_ragtest_root_demo>",
+				"--method", "global",
+				"--query", "What are the top themes in this story",
 			]
 		},
 		{
@@ -43,10 +30,9 @@
 			"request": "launch",
 			"module": "poetry",
 			"args": [
-				"poe",
-				"prompt-tune",
+				"poe", "prompt-tune",
 				"--config",
-				"D:\\pyprojects\\graphrag_project_test\\settings.yaml",
+				"<path_to_ragtest_root_demo>/settings.yaml",
 			]
 		}
 	]
