@@ -72,11 +72,11 @@ def chunk_text(
 
     output[to] = output.apply(
         cast(
-            "Any",
+            "Any",# type: ignore
             lambda x: run_strategy(strategy_exec, x[column], strategy_config, tick),
         ),
         axis=1,
-    )
+    ) 
     return output
 
 
@@ -131,6 +131,10 @@ def load_strategy(strategy: ChunkStrategyType) -> ChunkStrategy:
 
             bootstrap()
             return run_sentences
+        case ChunkStrategyType.seperator:
+            from graphrag.index.operations.chunk_text.strategies import run_seperator
+            return run_seperator
+
         case _:
             msg = f"Unknown strategy: {strategy}"
             raise ValueError(msg)

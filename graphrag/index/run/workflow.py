@@ -42,7 +42,7 @@ async def _inject_workflow_data_dependencies(
         workflow_id = f"workflow:{id}"
         try:
             table = await load_table_from_storage(f"{id}.parquet", storage)
-        except ValueError:
+        except ValueError as err:
             # our workflows allow for transient tables, and we avoid putting those in storage
             # however, we need to keep the table in the dependency list for proper execution order.
             # this allows us to catch missing table errors and issue a warning for pipeline users who may genuinely have an error (which we expect to be very rare)
@@ -51,6 +51,7 @@ async def _inject_workflow_data_dependencies(
                 "Dependency table %s not found in storage: it may be a runtime-only in-memory table. If you see further errors, this may be an actual problem.",
                 id,
             )
+            log.warning(f"{err=}")
             table = pd.DataFrame()
         workflow.add_table(workflow_id, table)
 
@@ -59,12 +60,15 @@ async def _export_workflow_output(
     workflow: Workflow, exporter: ParquetExporter
 ) -> pd.DataFrame:
     """Export the output from each step of the workflow."""
-    output = cast("pd.DataFrame", workflow.output())
+    try:
+        output = cast("pd.DataFrame", workflow.output())
     # only write final output that is not empty (i.e. has content)
     # NOTE: this design is intentional - it accounts for workflow steps with "side effects" that don't produce a formal output to save
-    if not output.empty:
-        await exporter.export(workflow.name, output)
-    return output
+        if not output.empty:
+            await exporter.export(workflow.name, output)
+        return output
+    except:
+        return pd.DataFrame()
 
 
 def _create_callback_chain(

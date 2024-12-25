@@ -54,9 +54,9 @@ def create_base_text_units(
         callbacks=callbacks,
         strategy=chunk_strategy,
     )
-
-    chunked = cast("pd.DataFrame", chunked[[*chunk_by_columns, "chunks"]])
+    chunked = cast("pd.DataFrame", chunked[[*chunk_by_columns, "chunks"]])    
     chunked = chunked.explode("chunks")
+    chunked = cast("pd.DataFrame", chunked[chunked["chunks"].notna()].reset_index(drop=True))
     chunked.rename(
         columns={
             "chunks": "chunk",
@@ -64,12 +64,17 @@ def create_base_text_units(
         inplace=True,
     )
     chunked["id"] = chunked.apply(lambda row: gen_sha512_hash(row, ["chunk"]), axis=1)
-    chunked[["document_ids", "chunk", "n_tokens"]] = pd.DataFrame(
-        chunked["chunk"].tolist(), index=chunked.index
-    )
+    data_list = chunked["chunk"].tolist()
+    if len(data_list) > 0:
+        if len(chunked)==len(data_list):
+            chunked[["document_ids", "chunk", "n_tokens"]] = pd.DataFrame(
+                data_list, index=chunked.index
+            )
+        else:
+            print(f"Error: Length of chunked={len(chunked)} and data_list={len(data_list)} is not equal")
     # rename for downstream consumption
+    
     chunked.rename(columns={"chunk": "text"}, inplace=True)
-
     return cast("pd.DataFrame", chunked[chunked["text"].notna()].reset_index(drop=True))
 
 

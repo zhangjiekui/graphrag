@@ -86,41 +86,11 @@ def run_sentences(
     input: list[str], _args: dict[str, Any], tick: ProgressTicker
 ) -> Iterable[TextChunk]:
     """Chunks text into multiple parts by sentence."""
-    encoding_name = _args.get("encoding_name", defs.ENCODING_MODEL)
-    enc = tiktoken.get_encoding(encoding_name)
     for doc_idx, text in enumerate(input):
         sentences = nltk.sent_tokenize(text)
-        sentences = [sentence for sentence in sentences if isinstance(sentence,str)]
         for sentence in sentences:
-            chunk_ids = enc.encode(sentence)
-            n_tokens=len(chunk_ids)
             yield TextChunk(
                 text_chunk=sentence,
                 source_doc_indices=[doc_idx],
-                n_tokens=n_tokens,
             )
         tick(1)
-
-def run_seperator(
-    input: list[str], _args: dict[str, Any], tick: ProgressTicker
-) -> Iterable[TextChunk]:
-    """Chunks text into multiple parts by sentence."""
-    seperator=_args.get("seperator",defs.CHUNK_SEPERATOR)
-    encoding_name = _args.get("encoding_name", defs.ENCODING_MODEL)
-    enc = tiktoken.get_encoding(encoding_name)
-    for doc_idx, text in enumerate(input):
-        if seperator in text:
-            chunks = text.split(seperator)
-            chunks = [chunk for chunk in chunks if isinstance(chunk,str)]
-            for chunk in chunks:
-                chunk_ids = enc.encode(chunk)
-                n_tokens=len(chunk_ids)
-                yield TextChunk(
-                    text_chunk=chunk,
-                    source_doc_indices=[doc_idx],
-                    n_tokens=n_tokens,
-                )
-            tick(1)
-        else:
-            return run_tokens(input,_args,tick)
-

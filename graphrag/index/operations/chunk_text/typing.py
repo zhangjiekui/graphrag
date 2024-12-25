@@ -33,6 +33,7 @@ class ChunkStrategyType(str, Enum):
 
     tokens = "tokens"
     sentence = "sentence"
+    seperator = "seperator"
 
     def __repr__(self):
         """Get a string representation."""

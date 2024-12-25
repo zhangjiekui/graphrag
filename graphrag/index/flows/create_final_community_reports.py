@@ -6,6 +6,7 @@
 from uuid import uuid4
 
 import pandas as pd
+pd.options.mode.copy_on_write = True #https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
 from datashaper import (
     AsyncType,
     VerbCallbacks,

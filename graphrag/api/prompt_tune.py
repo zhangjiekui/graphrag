@@ -10,7 +10,7 @@ to hook into graphrag and generate prompts from private data.
 WARNING: This API is under development and may undergo changes in future releases.
 Backwards compatibility is not guaranteed at this time.
 """
-
+from pathlib import Path
 from datashaper import NoopVerbCallbacks
 from pydantic import PositiveInt, validate_call
 
@@ -48,6 +48,7 @@ from graphrag.prompt_tune.types import DocSelectionType
 async def generate_indexing_prompts(
     config: GraphRagConfig,
     root: str,
+    # output_path: str,
     chunk_size: PositiveInt = MIN_CHUNK_SIZE,
     limit: PositiveInt = 15,
     selection_method: DocSelectionType = DocSelectionType.RANDOM,
@@ -64,7 +65,7 @@ async def generate_indexing_prompts(
     Parameters
     ----------
     - config: The GraphRag configuration.
-    - output_path: The path to store the prompts.
+    - root: The path of project_directory.
     - chunk_size: The chunk token size to use for input text units.
     - limit: The limit of chunks to load.
     - selection_method: The chunk selection method.
@@ -94,6 +95,8 @@ async def generate_indexing_prompts(
         k=k,
     )
 
+    doc_list = [doc for doc in doc_list if isinstance(doc,str)]
+
     # Create LLM from config
     llm = load_llm(
         "prompt_tuning",
@@ -110,18 +113,21 @@ async def generate_indexing_prompts(
     if not language:
         logger.info("Detecting language...")
         language = await detect_language(llm, doc_list)
+        logger.info(f"Detecting language...{language}")
 
-    logger.info("Generating persona...")
+    
     persona = await generate_persona(llm, domain)
+    logger.info(f"Generating persona...{persona}")
 
-    logger.info("Generating community report ranking description...")
+    
     community_report_ranking = await generate_community_report_rating(
         llm, domain=domain, persona=persona, docs=doc_list
     )
+    logger.info(f"Generating community report ranking description...{community_report_ranking}")
 
     entity_types = None
     if discover_entity_types:
-        logger.info("Generating entity types...")
+        
         entity_types = await generate_entity_types(
             llm,
             domain=domain,
@@ -129,8 +135,9 @@ async def generate_indexing_prompts(
             docs=doc_list,
             json_mode=config.llm.model_supports_json or False,
         )
+        logger.info(f"Generating entity types...{entity_types}")
 
-    logger.info("Generating entity relationship examples...")
+    
     examples = await generate_entity_relationship_examples(
         llm,
         persona=persona,
@@ -139,8 +146,9 @@ async def generate_indexing_prompts(
         language=language,
         json_mode=False,  # config.llm.model_supports_json should be used, but these prompts are used in non-json mode by the index engine
     )
+    logger.info(f"Generating entity relationship examples...{examples}")
 
-    logger.info("Generating entity extraction prompt...")
+    
     entity_extraction_prompt = create_entity_extraction_prompt(
         entity_types=entity_types,
         docs=doc_list,
@@ -150,26 +158,33 @@ async def generate_indexing_prompts(
         encoding_model=config.encoding_model,
         max_token_count=max_tokens,
         min_examples_required=min_examples_required,
+        output_path=Path(root)
     )
+    logger.info(f"Generating entity extraction prompt...{entity_extraction_prompt}")
 
-    logger.info("Generating entity summarization prompt...")
+    
     entity_summarization_prompt = create_entity_summarization_prompt(
         persona=persona,
         language=language,
+        output_path=Path(root)
     )
+    logger.info(f"Generating entity summarization prompt...{entity_summarization_prompt}")
 
-    logger.info("Generating community reporter role...")
+    
     community_reporter_role = await generate_community_reporter_role(
         llm, domain=domain, persona=persona, docs=doc_list
     )
+    logger.info(f"Generating community reporter role...{community_reporter_role}")
 
-    logger.info("Generating community summarization prompt...")
+    
     community_summarization_prompt = create_community_summarization_prompt(
         persona=persona,
         role=community_reporter_role,
         report_rating_description=community_report_ranking,
         language=language,
+        output_path=Path(root)
     )
+    logger.info(f"Generating community summarization prompt...{community_summarization_prompt}")
 
     return (
         entity_extraction_prompt,

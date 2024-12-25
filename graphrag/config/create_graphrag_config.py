@@ -414,10 +414,12 @@ def create_graphrag_config(
             )
 
             chunks_model = ChunkingConfig(
+                type=reader.str("type"),
                 size=reader.int("size") or defs.CHUNK_SIZE,
                 overlap=reader.int("overlap") or defs.CHUNK_OVERLAP,
                 group_by_columns=group_by_columns,
                 encoding_model=encoding_model,
+                seperator=reader.str("seperator") or defs.CHUNK_SEPERATOR,
             )
         with (
             reader.envvar_prefix(Section.snapshot),
