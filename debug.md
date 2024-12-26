@@ -29,7 +29,9 @@ target-version = "py310"
 extend-include = ["*.ipynb"]
 line-length = 120
 
+graphrag prompt-tune --root D:\pyprojects\graphrag_project_test_cli   --config D:\pyprojects\graphrag_project_test_cli\settings.yaml --language Chinese --output D:\pyprojects\graphrag_project_test_cli\output-tune2
 
+graphrag index --root D:\pyprojects\graphrag_project_test_cli
  
 D:\pyprojects\graphrag\graphrag\index\operations\chunk_text\typing.py [seperator = "seperator"]
 D:\pyprojects\graphrag\graphrag\index\operations\chunk_text\strategies.py [def run_seperator]

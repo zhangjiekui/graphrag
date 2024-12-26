@@ -106,12 +106,10 @@ async def generate_indexing_prompts(
     )
 
     if not domain:
-        logger.info("Generating domain...")
         domain = await generate_domain(llm, doc_list)
-        logger.info(f"Generated domain: {domain}")  # noqa
+        logger.info(f"Generating domain... {domain}")  # noqa
 
     if not language:
-        logger.info("Detecting language...")
         language = await detect_language(llm, doc_list)
         logger.info(f"Detecting language...{language}")
 
