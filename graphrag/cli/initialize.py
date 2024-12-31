@@ -8,19 +8,13 @@ from pathlib import Path
 from graphrag.config.init_content import INIT_DOTENV, INIT_YAML
 from graphrag.logger.factory import LoggerFactory, LoggerType
 from graphrag.prompts.index.claim_extraction import CLAIM_EXTRACTION_PROMPT
-from graphrag.prompts.index.community_report import (
-    COMMUNITY_REPORT_PROMPT,
-)
+from graphrag.prompts.index.community_report import COMMUNITY_REPORT_PROMPT
 from graphrag.prompts.index.entity_extraction import GRAPH_EXTRACTION_PROMPT
 from graphrag.prompts.index.summarize_descriptions import SUMMARIZE_PROMPT
 from graphrag.prompts.query.drift_search_system_prompt import DRIFT_LOCAL_SYSTEM_PROMPT
-from graphrag.prompts.query.global_search_knowledge_system_prompt import (
-    GENERAL_KNOWLEDGE_INSTRUCTION,
-)
+from graphrag.prompts.query.global_search_knowledge_system_prompt import GENERAL_KNOWLEDGE_INSTRUCTION
 from graphrag.prompts.query.global_search_map_system_prompt import MAP_SYSTEM_PROMPT
-from graphrag.prompts.query.global_search_reduce_system_prompt import (
-    REDUCE_SYSTEM_PROMPT,
-)
+from graphrag.prompts.query.global_search_reduce_system_prompt import REDUCE_SYSTEM_PROMPT
 from graphrag.prompts.query.local_search_system_prompt import LOCAL_SEARCH_SYSTEM_PROMPT
 from graphrag.prompts.query.question_gen_system_prompt import QUESTION_SYSTEM_PROMPT
 

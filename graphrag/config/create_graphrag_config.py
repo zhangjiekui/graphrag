@@ -419,7 +419,7 @@ def create_graphrag_config(
                 overlap=reader.int("overlap") or defs.CHUNK_OVERLAP,
                 group_by_columns=group_by_columns,
                 encoding_model=encoding_model,
-                seperator=reader.str("seperator") or defs.CHUNK_SEPERATOR,
+                delimiter_string=reader.str("delimiter_string") or defs.CHUNK_DELIMITER_STRING,
             )
         with (
             reader.envvar_prefix(Section.snapshot),

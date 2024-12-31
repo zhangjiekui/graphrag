@@ -1,4 +1,6 @@
-创建虚拟环境
+## VSCode运行调试环境搭建
+
+### 创建虚拟环境并安装包
 CTRL + SHIPT + P
 > Python:创建虚拟环境
   Venv 在当前工作区中创建".env"虚拟环境 
@@ -8,10 +10,10 @@ poetry self add 'poethepoet[poetry_plugin]'
 
 
 
-调试自己的文件：
+### 调试自己的文件：
 点击顶部菜单：运行 -> 添加配置 -> Python 调试程序，当前文件
 
-禁用ruff警告：
+### 禁用ruff警告：
 修改D:\pyprojects\graphrag\pyproject.toml
 以# 注释掉ruff相关的配置项目
 如：
@@ -29,68 +31,79 @@ target-version = "py310"
 extend-include = ["*.ipynb"]
 line-length = 120
 
+
+## Cli运行测试
 graphrag prompt-tune --root D:\pyprojects\graphrag_project_test_cli   --config D:\pyprojects\graphrag_project_test_cli\settings.yaml --language Chinese --output D:\pyprojects\graphrag_project_test_cli\output-tune2
 
 graphrag index --root D:\pyprojects\graphrag_project_test_cli
- 
-D:\pyprojects\graphrag\graphrag\index\operations\chunk_text\typing.py [seperator = "seperator"]
-D:\pyprojects\graphrag\graphrag\index\operations\chunk_text\strategies.py [def run_seperator]
+
+
+## 添加按分隔符切分txt文件的代码
+切分类型：type = delimiter
+切分字串：delimiter_string="\n=chunk_delimiter=\n"
+
+### 
+D:\pyprojects\graphrag\graphrag\index\operations\chunk_text\typing.py [delimiter = "delimiter"]
+### 方法定义
+D:\pyprojects\graphrag\graphrag\index\operations\chunk_text\strategies.py [def run_delimiter]
+### 方法调用
 D:\pyprojects\graphrag\graphrag\index\operations\chunk_text\chunk_text.py [load_strategy]
 
-        case ChunkStrategyType.seperator:
-            from graphrag.index.operations.chunk_text.strategies import run_seperator
-            return run_seperator
+        case ChunkStrategyType.delimiter:
+            from graphrag.index.operations.chunk_text.strategies import run_delimiter
+            return run_delimiter
 
-
+### 相关配置
 D:\pyprojects\graphrag_project_test\settings.yaml 
-        chunks:
+        type: "delimiter"
+D:\pyprojects\graphrag\graphrag\config\defaults.py
+        CHUNK_DELIMITER_STRING = "\n=chunk_delimiter=\n"
+
+D:\pyprojects\graphrag\graphrag\config\models\chunking_config.py
+    class ChunkingConfig(BaseModel):
+        type: str | None = Field(default=ChunkStrategyType.delimiter, description="The chunking method to use. Values:ChunkStrategyType.delimiter|tokens|sentence Default: delimiter")
+        delimiter_string: str | None = Field(default=defs.CHUNK_DELIMITER_STRING, description="The delimiter_string to use as text.split(delimiter_string).")
+
+        def resolved_strategy(self, encoding_model: str | None) -> dict:
+            """Get the resolved chunking strategy."""
+            from graphrag.index.operations.chunk_text import ChunkStrategyType
+
+            return self.strategy or {
+                "type": self.type or ChunkStrategyType.tokens,
+                "chunk_size": self.size,
+                "chunk_overlap": self.overlap,
+                "delimiter_string": self.delimiter_string,
+                "group_by_columns": self.group_by_columns,
+                "encoding_name": encoding_model or self.encoding_model,
+
+D:\pyprojects\graphrag_project_test_cli\settings.yaml
+    chunks:
         size: 500
         overlap: 100
         group_by_columns: [id]
-        type: "seperator"
+        type: "delimiter"
+        delimiter_string: "\n=chunk_delimiter=\n"
 
-
-D:\pyprojects\graphrag\graphrag\config\models\chunking_config.py
-
-
-class ChunkingConfig(BaseModel):
-    """Configuration section for chunking."""
-
-    size: int = Field(description="The chunk size to use.", default=defs.CHUNK_SIZE)
-    overlap: int = Field(
-        description="The chunk overlap to use.", default=defs.CHUNK_OVERLAP
-    )
-    group_by_columns: list[str] = Field(
-        description="The chunk by columns to use.",
-        default=defs.CHUNK_GROUP_BY_COLUMNS,
-    )
     
-    encoding_model: str | None = Field(
-        default=None, description="The encoding model to use."
-    )
 
-    strategy: dict | None = Field(
-        description="The chunk strategy to use, overriding the default tokenization strategy",
-        default={
-            "type": ChunkStrategyType.seperator,
-            "chunk_size": size,
-            "chunk_overlap": overlap,
-            "group_by_columns": group_by_columns,
-            "encoding_name": encoding_model,
-            "seperator": "\n=chunk_delimiter=\n"
-        },
-    )
+## todo 定义tokens方法
 
+    计划使用大模型自身的tokens接口 http://10.1.150.105:9997/doc
+    比较了一段文本，结果差别挺大的：
+        qwen25b70  427
+        cl100k_base 870
 
-    def resolved_strategy(self, encoding_model: str | None) -> dict:
-        """Get the resolved chunking strategy."""
-        from graphrag.index.operations.chunk_text import ChunkStrategyType
+## 源码走读
 
-        return self.strategy or {
-            "type": ChunkStrategyType.tokens,
-            "chunk_size": self.size,
-            "chunk_overlap": self.overlap,
-            "group_by_columns": self.group_by_columns,
-            "encoding_name": encoding_model or self.encoding_model,
-        }
+### D:\pyprojects\graphrag\graphrag\cli\main.py
+#### _initialize_cli  -> graphrag\cli\initialize.py 文件中的 def initialize_project_at(path: Path) 方法
+    https://vscode.dev/github/zhangjiekui/graphrag/blob/main/graphrag/cli/initialize.py#L28
 
+#### _prompt_tune_cli -> api.generate_indexing_prompts -> prompt_tune.py 文件中的  async def generate_indexing_prompts
+
+#### _index_cli -> -> api.build_index -> graphrag\api\index.py 文件中的 async def build_index
+    https://vscode.dev/github/zhangjiekui/graphrag/blob/main/graphrag/api/index.py#L23
+##### 注意--resume参数
+    graphrag index --root D:\pyprojects\graphrag_project_test_cli --verbose --memprofile  --resume true
+    asyncio.run(api.build_index(config=graphrag_config,is_resume_run=True,memory_profile=True))
+##### update_cli 其实也是最终调用async def build_index

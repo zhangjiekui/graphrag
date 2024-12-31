@@ -131,9 +131,9 @@ def load_strategy(strategy: ChunkStrategyType) -> ChunkStrategy:
 
             bootstrap()
             return run_sentences
-        case ChunkStrategyType.seperator:
-            from graphrag.index.operations.chunk_text.strategies import run_seperator
-            return run_seperator
+        case ChunkStrategyType.delimiter:
+            from graphrag.index.operations.chunk_text.strategies import run_delimiter
+            return run_delimiter
 
         case _:
             msg = f"Unknown strategy: {strategy}"

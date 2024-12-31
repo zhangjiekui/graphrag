@@ -25,24 +25,16 @@ class ChunkingConfig(BaseModel):
     )
 
     type: str | None = Field(
-        default=ChunkStrategyType.seperator, description="The chunking method to use. Values:ChunkStrategyType.seperator|tokens|sentence Default: seperator"
+        default=ChunkStrategyType.delimiter, description="The chunking method to use. Values:ChunkStrategyType.delimiter|tokens|sentence Default: delimiter"
     )
 
-    seperator: str | None = Field(
-        default="\n=chunk_delimiter=\n", description="The seperator_string to use as text.split(seperator)."
+    delimiter_string: str | None = Field(
+        default=defs.CHUNK_DELIMITER_STRING, description="The delimiter_string to use as text.split(delimiter_string)."
     )
 
     strategy: dict | None = Field(
         description="The chunk strategy to use, overriding the default tokenization strategy",
         default=None,
-        # default={
-        #     "type": ChunkStrategyType.seperator,
-        #     "chunk_size": size,
-        #     "chunk_overlap": overlap,
-        #     "group_by_columns": group_by_columns,
-        #     "encoding_name": encoding_model,
-        #     "seperator": seperator
-        # },
     )
 
 
@@ -54,7 +46,7 @@ class ChunkingConfig(BaseModel):
             "type": self.type or ChunkStrategyType.tokens,
             "chunk_size": self.size,
             "chunk_overlap": self.overlap,
-            "seperator": self.seperator,
+            "delimiter_string": self.delimiter_string,
             "group_by_columns": self.group_by_columns,
             "encoding_name": encoding_model or self.encoding_model,
             

@@ -26,11 +26,11 @@ print(graphrag_config)
 # pass
 
 # prompt_tune
-prompts = asyncio.run(api.generate_indexing_prompts(config=graphrag_config,root=project_directory))
+prompts = asyncio.run(api.generate_indexing_prompts(config=graphrag_config,root=project_directory,language='Chinese'))
 
 # Build an index
 print("=============Build an index=============")
-index_result: list[PipelineRunResult] = asyncio.run(api.build_index(config=graphrag_config))
+index_result: list[PipelineRunResult] = asyncio.run(api.build_index(config=graphrag_config,is_resume_run=True,memory_profile=True))
 
 # index_result is a list of workflows that make up the indexing pipeline that was run
 for workflow_result in index_result:
