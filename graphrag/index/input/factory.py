@@ -23,6 +23,7 @@ from graphrag.storage.blob_pipeline_storage import BlobPipelineStorage
 from graphrag.storage.file_pipeline_storage import FilePipelineStorage
 
 log = logging.getLogger(__name__)
+log.setLevel(logging.DEBUG)
 loaders: dict[str, Callable[..., Awaitable[pd.DataFrame]]] = {
     text: load_text,
     csv: load_csv,
@@ -38,7 +39,6 @@ async def create_input(
     root_dir = root_dir or ""
     log.info("loading input from root_dir=%s", config.base_dir)
     progress_reporter = progress_reporter or NullProgressLogger()
-
     match config.type:
         case InputType.blob:
             log.info("using blob storage input")

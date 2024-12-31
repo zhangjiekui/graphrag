@@ -6,6 +6,12 @@ from graphrag.index.typing import PipelineRunResult
 from graphrag.config.create_graphrag_config import create_graphrag_config
 import pandas as pd
 
+
+import logging
+# 设置全局日志级别
+logging.basicConfig(level=logging.DEBUG)
+
+
 pd.options.mode.copy_on_write = True #https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
 print=pprint.pprint
 project_directory = 'D:\pyprojects\graphrag_project_test'
@@ -26,7 +32,7 @@ print(graphrag_config)
 # pass
 
 # prompt_tune
-prompts = asyncio.run(api.generate_indexing_prompts(config=graphrag_config,root=project_directory,language='Chinese'))
+# prompts = asyncio.run(api.generate_indexing_prompts(config=graphrag_config,root=project_directory,language='Chinese'))
 
 # Build an index
 print("=============Build an index=============")
