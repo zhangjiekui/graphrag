@@ -39,7 +39,7 @@ async def generate_text_embeddings(
     storage: PipelineStorage,
     text_embed_config: dict,
     embedded_fields: set[str],
-    snapshot_embeddings_enabled: bool = False,
+    snapshot_embeddings_enabled: bool = True,
 ) -> None:
     """All the steps to generate all embeddings."""
     embedding_param_map = {

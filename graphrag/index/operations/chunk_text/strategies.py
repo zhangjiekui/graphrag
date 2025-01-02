@@ -122,7 +122,10 @@ def run_delimiter(
                 )
             tick(1)
         else:
-            return run_tokens(input,_args,tick)
+            results = run_tokens(input,_args,tick)
+            for result in results:
+                yield result
+            # return results # type: ignore
 
 tokens = [
     27,

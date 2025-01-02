@@ -107,3 +107,13 @@ D:\pyprojects\graphrag_project_test_cli\settings.yaml
     graphrag index --root D:\pyprojects\graphrag_project_test_cli --verbose --memprofile  --resume true
     asyncio.run(api.build_index(config=graphrag_config,is_resume_run=True,memory_profile=True))
 ##### update_cli 其实也是最终调用async def build_index
+
+
+## 流程执行顺序：
+### 为体验和调试全部功能，需将D:\pyprojects\graphrag\graphrag\config\defaults.py 中的False替换为True
+
+INFO:graphrag.index.workflows.load:Workflow Run Order: 
+['create_base_text_units', 'create_final_documents', 'extract_graph', 'create_final_covariates', 'compute_communities', 'create_final_entities', 'create_final_relationships', 'create_final_communities', 'create_final_nodes', 'create_final_text_units', 'create_final_community_reports', 'generate_text_embeddings']
+
+### create_base_text_units  -> graphrag\index\workflows\v1\create_base_text_units.py
+### create_final_documents  -> graphrag\index\workflows\v1\create_final_documents.py

@@ -103,6 +103,7 @@ def run_strategy(
     strategy_results = strategy(texts, {**strategy_args}, tick)
 
     results = []
+    # strategy_results = list(strategy_results)
     for strategy_result in strategy_results:
         doc_indices = strategy_result.source_doc_indices
         if isinstance(input[doc_indices[0]], str):

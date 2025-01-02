@@ -83,7 +83,8 @@ async def workflow(
     summarization_strategy: dict[str, Any] | None = None,
     summarization_num_threads: int = 4,
     snapshot_graphml_enabled: bool = False,
-    snapshot_transient_enabled: bool = False,
+    #  如果启用了 snapshot_transient_enabled 参数，会将处理后的结果保存为中间快照文件（格式为 Parquet）
+    snapshot_transient_enabled: bool = True,
     **_kwargs: dict,
 ) -> VerbResult:
     """All the steps to create the base entity graph."""

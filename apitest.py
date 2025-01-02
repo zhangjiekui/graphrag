@@ -9,7 +9,7 @@ import pandas as pd
 
 import logging
 # 设置全局日志级别
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 
 pd.options.mode.copy_on_write = True #https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
@@ -36,7 +36,8 @@ print(graphrag_config)
 
 # Build an index
 print("=============Build an index=============")
-index_result: list[PipelineRunResult] = asyncio.run(api.build_index(config=graphrag_config,is_resume_run=True,memory_profile=True))
+index_result: list[PipelineRunResult] = asyncio.run(api.build_index(config=graphrag_config,is_resume_run=False,memory_profile=True))
+
 
 # index_result is a list of workflows that make up the indexing pipeline that was run
 for workflow_result in index_result:
@@ -63,36 +64,36 @@ final_community_reports = pd.read_parquet(
 text_unit_df = pd.read_parquet(f"{project_directory}/output/create_final_text_units.parquet")
 relationship_df = pd.read_parquet(f"{project_directory}/output/create_final_relationships.parquet")
 
-response, context = asyncio.run(api.drift_search(
-    config=graphrag_config,
-    nodes=final_nodes,
-    entities=final_entities,
-    community_reports=final_community_reports,
-    text_units=text_unit_df,
-    relationships=relationship_df,
-    community_level=1,
-    query="寿县迎河镇中心卫生院信息化系统建设提升项目的建设内容（信息系统或子系统）?",
-))
-
-# print(context)
-print(response)
-
-
-
-
-# response, context = asyncio.run(api.global_search(
+# response, context = asyncio.run(api.drift_search(
 #     config=graphrag_config,
 #     nodes=final_nodes,
 #     entities=final_entities,
-#     communities=final_communities,
 #     community_reports=final_community_reports,
-#     community_level=2,
-#     dynamic_community_selection=False,
-#     response_type="Multiple Paragraphs",
+#     text_units=text_unit_df,
+#     relationships=relationship_df,
+#     community_level=1,
 #     query="寿县迎河镇中心卫生院信息化系统建设提升项目的建设内容（信息系统或子系统）?",
 # ))
 
-
-
 # # print(context)
 # print(response)
+
+
+
+
+response, context = asyncio.run(api.global_search(
+    config=graphrag_config,
+    nodes=final_nodes,
+    entities=final_entities,
+    communities=final_communities,
+    community_reports=final_community_reports,
+    community_level=2,
+    dynamic_community_selection=False,
+    response_type="Multiple Paragraphs",
+    query="寿县迎河镇中心卫生院信息化系统建设提升项目的建设内容（信息系统或子系统）?",
+))
+
+
+
+# print(context)
+print(response)
