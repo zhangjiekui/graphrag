@@ -121,11 +121,15 @@ async def workflow(
             storage=storage,
             formats=["parquet"],
         )
+        base_entity_nodes.to_excel(f"{storage._root_dir}/base_entity_nodes.xlsx") # type: ignore
+
+
         await snapshot(
             base_relationship_edges,
             name="base_relationship_edges",
             storage=storage,
             formats=["parquet"],
         )
+        base_relationship_edges.to_excel(f"{storage._root_dir}/base_relationship_edges.xlsx") # type: ignore
 
     return create_verb_result(cast("Table", pd.DataFrame()))

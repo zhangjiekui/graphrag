@@ -34,20 +34,44 @@ print(graphrag_config)
 # prompt_tune
 # prompts = asyncio.run(api.generate_indexing_prompts(config=graphrag_config,root=project_directory,language='Chinese'))
 
-# Build an index
-print("=============Build an index=============")
-index_result: list[PipelineRunResult] = asyncio.run(api.build_index(config=graphrag_config,is_resume_run=False,memory_profile=True))
+## Build an index
+# print("=============Build an index=============")
+# index_result: list[PipelineRunResult] = asyncio.run(api.build_index(config=graphrag_config,is_resume_run=False,memory_profile=True))
 
 
-# index_result is a list of workflows that make up the indexing pipeline that was run
-for workflow_result in index_result:
-    status = f"error\n{workflow_result.errors}" if workflow_result.errors else "success"
-    print(f"Workflow Name: {workflow_result.workflow}\tStatus: {status}")
+# # index_result is a list of workflows that make up the indexing pipeline that was run
+# for workflow_result in index_result:
+#     status = f"error\n{workflow_result.errors}" if workflow_result.errors else "success"
+#     print(f"Workflow Name: {workflow_result.workflow}\tStatus: {status}")
 
 
+
+ 
+def convert_parquet_files_to_excel(directory):
+    import os
+    import fnmatch
+    import pandas as pd
+
+    parquet_files = []
+    for root, dirs, files in os.walk(directory):
+        for file in fnmatch.filter(files, '*.parquet'):
+            parquet_file = os.path.join(root, file)
+            parquet_files.append(parquet_file)
+            name, extension = os.path.splitext(parquet_file)
+            execl_file = name + '.xlsx'
+            df = pd.read_parquet(parquet_file)
+            df.to_excel(execl_file)
+    return parquet_files
+ 
+# 使用示例
+directory_path = f"{project_directory}/output"
+parquet_files_list = convert_parquet_files_to_excel(directory_path)
+for file in parquet_files_list:
+    print(file)
 
 # Query an index
 print("=============Query an index=============")
+
 import pandas as pd
 
 final_nodes = pd.read_parquet(f"{project_directory}/output/create_final_nodes.parquet")

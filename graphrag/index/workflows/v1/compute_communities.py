@@ -78,5 +78,6 @@ async def workflow(
             storage=storage,
             formats=["parquet"],
         )
+        base_communities.to_excel(f"{storage._root_dir}/base_communities.xlsx") # type: ignore
 
     return create_verb_result(cast("Table", pd.DataFrame()))

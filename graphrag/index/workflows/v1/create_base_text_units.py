@@ -83,6 +83,7 @@ async def workflow(
             storage=storage,
             formats=["parquet"],
         )
+        output.to_excel(f"{storage._root_dir}/create_base_text_units.xlsx") # type: ignore
 
     return create_verb_result(
         cast(
