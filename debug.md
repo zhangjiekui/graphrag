@@ -106,3 +106,17 @@ INFO:graphrag.index.workflows.load:Workflow Run Order:
 
 ### create_base_text_units  -> graphrag\index\workflows\v1\create_base_text_units.py
 ### create_final_documents  -> graphrag\index\workflows\v1\create_final_documents.py
+
+
+
+## 与R2R结合
+
+### Ingestion Provider
+https://github.com/SciPhi-AI/R2R/blob/main/py/core/providers/ingestion/r2r/base.py
+https://r2r-docs.sciphi.ai/documentation/configuration/ingestion
+
+### R2R Core和Services(或许可以跳过 )
+[R2R库->py->core目录]关键是实现了Postgres 向量和图数据库 https://github.com/SciPhi-AI/R2R/blob/main/py/core/database/postgres.py
+[R2R库->services目录]以及Leiden  cluster_graph： https://github.com/SciPhi-AI/R2R/blob/main/services/clustering/main.py
+
+### 在GraphRag代码库中使用R2R API & SDK在GraphRag中增加一套平行的lancedb和parquet存储的代码实现（但可以保留缓存部分）
